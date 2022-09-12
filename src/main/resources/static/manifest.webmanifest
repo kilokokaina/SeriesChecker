@@ -1,0 +1,17 @@
+{
+  "background_color": "PaleGreen",
+  "description": "Web-application for posting information about series",
+  "display": "fullscreen",
+  "icons": [
+    {
+      "src": "/static/icon/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "name": "SeriesChecker",
+  "short_name": "SeriesChecker",
+  "start_url": "http:/192.168.0.178:8000/",
+  "scope": "http:/192.168.0.178:8000/",
+  "theme_color": "PaleGreen"
+}
