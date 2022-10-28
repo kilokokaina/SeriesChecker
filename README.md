@@ -1,2 +1,2 @@
 # SeriesChecker
-SeriesChecker is a web-application with recomendation system and social-media blog
+SeriesChecker is a web-application with recommendation system and social-media blog
