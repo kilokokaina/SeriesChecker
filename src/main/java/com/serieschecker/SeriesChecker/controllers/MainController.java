@@ -69,7 +69,7 @@ public class MainController {
     }
 
     @GetMapping("about")
-    public String aboutPage(Model model, HttpServletRequest request) {
+    public String aboutPage(Model model) {
         model.addAttribute("title", "О нас");
         return "about";
     }
