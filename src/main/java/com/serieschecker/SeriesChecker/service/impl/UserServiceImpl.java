@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
+import java.util.List;
 
 @Service
 public record UserServiceImpl(UserRepository userRepository) implements UserDetailsService, UserService {
@@ -34,5 +35,9 @@ public record UserServiceImpl(UserRepository userRepository) implements UserDeta
         userRepository.save(userModel);
 
         return true;
+    }
+
+    public List<UserModel> findByRole(String userRole) {
+        return userRepository.findByRole(userRole);
     }
 }
