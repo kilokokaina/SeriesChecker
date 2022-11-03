@@ -42,27 +42,29 @@ public class KinopoiskParser implements CommandLineRunner {
         log.info("Run: " + getClass());
 
         List<String> seriesLinkList = new ArrayList<>();
-//
-//        for (int i = 1; i <= 20; i++) {
-//            String sourceUrlPage = String.format(linkSourceUrl, i);
-//
-//            try {
-//                Document mainHTML = Jsoup.connect(sourceUrlPage).get();
-//                Elements itemHref = mainHTML.getElementsByClass("base-movie-main-info_link__YwtP1");
-//
-//                itemHref.forEach(item -> {
-//                    seriesLinkList.add(item.attr("href"));
-//                    log.info(item.attr("href"));
-//                });
-//
-//            } catch (HttpStatusException ex) {
-//                ex.printStackTrace();
-//            }
-//
-//            Thread.sleep(13000);
-//        }
-//
-//        log.info("ULR List Done...Start parsing title pages");
+
+        for (int i = 1; i <= 20; i++) {
+            String sourceUrlPage = String.format(linkSourceUrl, i);
+
+            try {
+                Document mainHTML = Jsoup.connect(sourceUrlPage).get();
+                Elements itemHref = mainHTML.getElementsByClass("base-movie-main-info_link__YwtP1");
+
+                itemHref.forEach(item -> {
+                    seriesLinkList.add(item.attr("href"));
+                    log.info(item.attr("href"));
+                });
+
+            } catch (HttpStatusException ex) {
+                ex.printStackTrace();
+            }
+
+            Thread.sleep(13000);
+        }
+
+        log.info("ULR List Done...Start parsing title pages");
+
+        //Block for parsing title HTML from file
         try(FileReader fileReader = new FileReader("/Users/nikol/Desktop/output.txt")) {
 
             BufferedReader bufferedReader = new BufferedReader(fileReader);
