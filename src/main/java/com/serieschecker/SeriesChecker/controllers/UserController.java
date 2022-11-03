@@ -1,8 +1,10 @@
 package com.serieschecker.SeriesChecker.controllers;
 
 import com.serieschecker.SeriesChecker.models.PostModel;
+import com.serieschecker.SeriesChecker.models.TitleModel;
 import com.serieschecker.SeriesChecker.models.UserModel;
 import com.serieschecker.SeriesChecker.service.impl.PostServiceImpl;
+import com.serieschecker.SeriesChecker.service.impl.TitleServiceImpl;
 import com.serieschecker.SeriesChecker.service.impl.UserServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,16 +17,20 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Controller
 @RequestMapping("user")
 public class UserController {
     private final PostServiceImpl postService;
     private final UserServiceImpl userService;
+    private final TitleServiceImpl titleService;
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
     @Autowired
-    public UserController(PostServiceImpl postService, UserServiceImpl userService) {
+    public UserController(PostServiceImpl postService, UserServiceImpl userService,
+                          TitleServiceImpl titleService) {
+        this.titleService = titleService;
         this.postService = postService;
         this.userService = userService;
     }
@@ -109,5 +115,18 @@ public class UserController {
         });
 
         return testList;
+    }
+
+    @GetMapping("test")
+    public @ResponseBody List<TitleModel> getAllTitleByGenre(
+            @RequestParam(value = "genre") String[] genre) {
+        Set<String> genreSet = Set.of(genre);
+        return titleService.findAllByGenre(genreSet);
+    }
+
+    @GetMapping("test/one")
+    public @ResponseBody List<TitleModel> getTitleByGenre(
+            @RequestParam(value = "genre") String genre) {
+        return titleService.findByGenre(genre);
     }
 }

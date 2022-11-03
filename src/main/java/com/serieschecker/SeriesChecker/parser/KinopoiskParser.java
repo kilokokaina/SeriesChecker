@@ -1,9 +1,9 @@
 package com.serieschecker.SeriesChecker.parser;
 
 import com.serieschecker.SeriesChecker.models.TitleModel;
-import com.serieschecker.SeriesChecker.models.UserModel;
-import com.serieschecker.SeriesChecker.service.impl.UserServiceImpl;
+import com.serieschecker.SeriesChecker.service.impl.TitleServiceImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -12,7 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,45 +23,64 @@ import java.util.Objects;
 @Slf4j
 @Component
 public class KinopoiskParser implements CommandLineRunner {
-    private static final String titleSourceUrl = "https://kinopoisk/";
-    private static final String linkSourceUrl = "/Users/nikol/Desktop/Kinopoisk/%s.html";
+    private static final String titleSourceUrl = "https://www.kinopoisk.ru%s";
+    private static final String linkSourceUrl = "https://www.kinopoisk.ru/lists/movies/popular-series/?page=%d";
 
     private static final String[] requiredFields = { "Год производства", "Страна",
             "Платформа", "Жанр", "Возраст", "Время"
     };
 
-    private final UserServiceImpl userService;
+    private final TitleServiceImpl titleService;
 
     @Autowired
-    public KinopoiskParser(UserServiceImpl userService) {
-        this.userService = userService;
+    public KinopoiskParser(TitleServiceImpl titleService) {
+        this.titleService = titleService;
     }
 
     @Override
     public void run(String[] args) throws Exception {
         log.info("Run: " + getClass());
 
-        List<UserModel> userAdminList = userService.findByRole("admin");
-        userAdminList.forEach(item -> log.info(item.toString()));
+        List<String> seriesLinkList = new ArrayList<>();
+//
+//        for (int i = 1; i <= 20; i++) {
+//            String sourceUrlPage = String.format(linkSourceUrl, i);
+//
+//            try {
+//                Document mainHTML = Jsoup.connect(sourceUrlPage).get();
+//                Elements itemHref = mainHTML.getElementsByClass("base-movie-main-info_link__YwtP1");
+//
+//                itemHref.forEach(item -> {
+//                    seriesLinkList.add(item.attr("href"));
+//                    log.info(item.attr("href"));
+//                });
+//
+//            } catch (HttpStatusException ex) {
+//                ex.printStackTrace();
+//            }
+//
+//            Thread.sleep(13000);
+//        }
+//
+//        log.info("ULR List Done...Start parsing title pages");
+        try(FileReader fileReader = new FileReader("/Users/nikol/Desktop/output.txt")) {
 
-        Document mainHTML = Jsoup.parse(new File(String.format(linkSourceUrl, "main")));
-        Elements seriesLink = mainHTML.getElementsByClass("base-movie-main-info_link__YwtP1");
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            String line = bufferedReader.readLine();
 
-        List<TitleModel> titleModelList = new ArrayList<>();
+            while (line != null) {
+                seriesLinkList.add(line);
+                line = bufferedReader.readLine();
+            }
+        }
 
-        int i = 0;
-        for (Element link : seriesLink) {
-            if (i == 4) break;
 
+        for (String link : seriesLinkList) {
+            log.info(link);
             TitleModel tempTitleModel = new TitleModel();
 
-            String[] linkArray = link.attr("href").split("/");
-            String titlePage = linkArray[linkArray.length - 1];
-
             try {
-                log.info("---------NEW PAGE---------");
-
-                Document titleHTML = Jsoup.parse(new File(String.format(linkSourceUrl, titlePage)));
+                Document titleHTML = Jsoup.connect(String.format(titleSourceUrl, link)).get();
                 String titleTV = Objects.requireNonNull(
                         titleHTML.selectFirst("span[data-tid=2da92aed]")).text();
 
@@ -73,20 +94,33 @@ public class KinopoiskParser implements CommandLineRunner {
                     Elements fieldsInfo = divField.next();
 
                     if (divField.size() == 0) tempTitleModel.setFields(field, null);
-                    fieldsInfo.forEach(item ->
-                            tempTitleModel.setFields(field, item.text())
-                    );
+                    fieldsInfo.forEach(item -> {
+                        if (field.equals("Год производства")) {
+                            String[] itemArray = item.text().split(" ");
+
+                            int titleYear = Integer.parseInt(itemArray[0]);
+                            int titleSeason = Integer.parseInt(itemArray[1].split(" ")[0]
+                                    .replace("(", ""));
+
+                            tempTitleModel.setTitleYear(titleYear);
+                            tempTitleModel.setTitleSeasonNumber(titleSeason);
+
+                        } else if (field.equals("Время")) {
+                            int titleDuration = Integer.parseInt(item.text().split(" ")[0]
+                                    .replace("—", "0"));
+
+                            tempTitleModel.setTitleEpisodeDuration(titleDuration);
+
+                        } else tempTitleModel.setFields(field, item.text());
+                    });
                 }
 
-                titleModelList.add(tempTitleModel);
+                titleService.save(tempTitleModel);
+                Thread.sleep(15000);
 
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-
-            i++;
         }
-
-        titleModelList.forEach(item -> log.info(item.toString()));
     }
 }
