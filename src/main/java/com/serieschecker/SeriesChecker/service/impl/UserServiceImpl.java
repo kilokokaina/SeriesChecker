@@ -37,6 +37,16 @@ public record UserServiceImpl(UserRepository userRepository) implements UserDeta
         return true;
     }
 
+    @Override
+    public UserModel findByUsername(String username) {
+        return userRepository.findByUsername(username);
+    }
+
+    @Override
+    public UserModel findByChatId(Long chatId) {
+        return userRepository.findByTelegramBotChatId(chatId);
+    }
+
     public List<UserModel> findByRole(String userRole) {
         return userRepository.findByRole(userRole);
     }

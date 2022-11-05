@@ -12,4 +12,6 @@ public interface UserRepository extends JpaRepository<UserModel, Long> {
     @Query(value = "SELECT * FROM user_model AS usr, user_role AS rl " +
             "WHERE usr.user_id = rl.user_id AND rl.role_set = :role", nativeQuery = true)
     List<UserModel> findByRole(@Param("role") String userRole);
+    UserModel findByTelegramBotChatId(Long chatId);
+
 }

@@ -5,9 +5,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 
 @Data
@@ -19,6 +18,12 @@ public class UserModel implements UserDetails {
 
     private String username;
     private String password;
+
+    private String loginIp;
+    private LocalDateTime loginDate;
+
+    private Long telegramBotChatId;
+    private boolean status2FA;
 
     private boolean active;
 

@@ -13,7 +13,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -21,7 +20,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Slf4j
-@Component
+//@Component
 public class KinopoiskParser implements CommandLineRunner {
     private static final String titleSourceUrl = "https://www.kinopoisk.ru%s";
     private static final String linkSourceUrl = "https://www.kinopoisk.ru/lists/movies/popular-series/?page=%d";

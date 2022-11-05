@@ -2,19 +2,20 @@ package com.serieschecker.SeriesChecker.controllers;
 
 import com.serieschecker.SeriesChecker.models.PostModel;
 import com.serieschecker.SeriesChecker.models.UserModel;
+import com.serieschecker.SeriesChecker.service.impl.AuthenticationProviderImpl;
 import com.serieschecker.SeriesChecker.service.impl.PostServiceImpl;
 import com.serieschecker.SeriesChecker.service.impl.UserServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -23,9 +24,12 @@ import java.util.Objects;
 public class MainController {
     private final UserServiceImpl userService;
     private final PostServiceImpl postService;
+    private final AuthenticationProviderImpl authenticationProvider;
 
     @Autowired
-    public MainController(UserServiceImpl userService, PostServiceImpl postService) {
+    public MainController(UserServiceImpl userService, PostServiceImpl postService,
+                          AuthenticationProviderImpl authenticationProvider) {
+        this.authenticationProvider = authenticationProvider;
         this.userService = userService;
         this.postService = postService;
     }
@@ -87,5 +91,26 @@ public class MainController {
         }
 
         return "redirect:/login";
+    }
+
+    public static class CredentialsDTO {
+        public String username;
+        public String password;
+    }
+
+    @PostMapping("auth")
+    public @ResponseBody String popupLoginProcess(@RequestBody CredentialsDTO credentialsDTO) {
+        String username = credentialsDTO.username;
+        String password = credentialsDTO.password;
+
+        Authentication authentication = new UsernamePasswordAuthenticationToken(username, password);
+        authentication = authenticationProvider.authenticate((authentication));
+
+        if (authentication == null) return "false";
+
+        log.info("Authentication success: " + username);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        return "true";
     }
 }
