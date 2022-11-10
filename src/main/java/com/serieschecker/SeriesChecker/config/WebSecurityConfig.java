@@ -39,7 +39,7 @@ public class WebSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
                 .authorizeHttpRequests((requests) -> requests
-                        .antMatchers("/", "/about", "/post/**",
+                        .antMatchers("/", "/about", "/post/**", "/search/**",
                                 "/auth", "/registration", "/static/**").permitAll()
                         .anyRequest().authenticated()
                 )

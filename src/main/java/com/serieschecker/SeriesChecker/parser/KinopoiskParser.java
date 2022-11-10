@@ -12,18 +12,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.logging.ConsoleHandler;
 
 @Slf4j
-//@Component
+@Component
 public class KinopoiskParser implements CommandLineRunner {
     private static final String titleSourceUrl = "https://www.kinopoisk.ru%s";
-    private static final String linkSourceUrl = "https://www.kinopoisk.ru/lists/movies/popular-series/?page=%d";
+    private static final String linkSourceUrl250 = "https://www.kinopoisk.ru/lists/movies/series-top250/?page=%d";
+    private static final String linkSourceUrlPopular = "https://www.kinopoisk.ru/lists/movies/popular-series/?page=%d";
 
     private static final String[] requiredFields = { "Год производства", "Страна",
             "Платформа", "Жанр", "Возраст", "Время"
@@ -36,14 +36,11 @@ public class KinopoiskParser implements CommandLineRunner {
         this.titleService = titleService;
     }
 
-    @Override
-    public void run(String[] args) throws Exception {
-        log.info("Run: " + getClass());
-
+    private static List<String> getTitleLink(String url, int pageNumber) throws IOException, InterruptedException {
         List<String> seriesLinkList = new ArrayList<>();
 
-        for (int i = 1; i <= 20; i++) {
-            String sourceUrlPage = String.format(linkSourceUrl, i);
+        for (int i = 1; i <= pageNumber; i++) {
+            String sourceUrlPage = String.format(url, i);
 
             try {
                 Document mainHTML = Jsoup.connect(sourceUrlPage).get();
@@ -61,21 +58,28 @@ public class KinopoiskParser implements CommandLineRunner {
             Thread.sleep(13000);
         }
 
-        log.info("ULR List Done...Start parsing title pages");
+        try(FileWriter fileWriter = new FileWriter("/Users/nikol/Desktop/output250.txt")) {
 
-        //Block for parsing title HTML from file
-        try(FileReader fileReader = new FileReader("/Users/nikol/Desktop/output.txt")) {
+            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+            seriesLinkList.forEach(link -> {
+                try {
 
-            BufferedReader bufferedReader = new BufferedReader(fileReader);
-            String line = bufferedReader.readLine();
+                    bufferedWriter.write(link);
+                    bufferedWriter.append("\n");
 
-            while (line != null) {
-                seriesLinkList.add(line);
-                line = bufferedReader.readLine();
-            }
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+
+            bufferedWriter.flush();
+            bufferedWriter.close();
         }
 
+        return seriesLinkList;
+    }
 
+    private static void parsePage(List<String> seriesLinkList, TitleServiceImpl titleService) {
         for (String link : seriesLinkList) {
             log.info(link);
             TitleModel tempTitleModel = new TitleModel();
@@ -119,9 +123,15 @@ public class KinopoiskParser implements CommandLineRunner {
                 titleService.save(tempTitleModel);
                 Thread.sleep(15000);
 
-            } catch (IOException e) {
+            } catch (IOException | InterruptedException e) {
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    @Override
+    public void run(String[] args) throws Exception {
+        log.info("Run: " + getClass());
+        log.info("ULR List Done...Start parsing title pages");
     }
 }
