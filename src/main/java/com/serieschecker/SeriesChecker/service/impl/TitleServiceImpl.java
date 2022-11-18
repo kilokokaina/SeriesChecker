@@ -13,7 +13,7 @@ import java.util.Set;
 
 @Service
 public class TitleServiceImpl implements TitleService {
-    private final TitleRepository titleRepository;
+    public final TitleRepository titleRepository;
 
     @Autowired
     public TitleServiceImpl(TitleRepository titleRepository) {

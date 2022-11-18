@@ -1,5 +1,7 @@
 package com.serieschecker.SeriesChecker.models;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import com.serieschecker.SeriesChecker.view.PostView;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -11,18 +13,25 @@ import java.util.Date;
 public class PostModel {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @JsonView(PostView.IdTitleAuthor.class)
     private Long id;
 
+    @JsonView(PostView.IdTitleAuthor.class)
     private String postTitle;
+
     private String postDescription;
     @Lob
     private String postText;
 
+    @JsonView(PostView.IdTitleAuthor.class)
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private UserModel author;
 
+    @JsonView(PostView.FullData.class)
     private Date postDate = new Date();
+
+    @JsonView(PostView.FullData.class)
     private int postViews;
 
     public PostModel() {

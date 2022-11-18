@@ -50,4 +50,8 @@ public record UserServiceImpl(UserRepository userRepository) implements UserDeta
     public List<UserModel> findByRole(String userRole) {
         return userRepository.findByRole(userRole);
     }
+
+    public List<UserModel> findAll() {
+        return userRepository.findAll();
+    }
 }

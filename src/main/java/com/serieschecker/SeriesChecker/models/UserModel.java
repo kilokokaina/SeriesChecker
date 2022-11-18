@@ -1,5 +1,7 @@
 package com.serieschecker.SeriesChecker.models;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import com.serieschecker.SeriesChecker.view.UserView;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,22 +16,30 @@ import java.util.Set;
 public class UserModel implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @JsonView(UserView.IdUsernamePassword.class)
     private Long userId;
 
+    @JsonView(UserView.IdUsernamePassword.class)
     private String username;
+
+    @JsonView(UserView.IdUsernamePassword.class)
     private String password;
 
     private String loginIp;
     private LocalDateTime loginDate;
 
     private Long telegramBotChatId;
+
+    @JsonView(UserView.FullData.class)
     private boolean status2FA;
 
+    @JsonView(UserView.FullData.class)
     private boolean active;
 
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"))
     @Enumerated(EnumType.STRING)
+    @JsonView(UserView.FullData.class)
     private Set<Role> roleSet;
 
     @Override

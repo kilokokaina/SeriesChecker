@@ -16,7 +16,6 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.logging.ConsoleHandler;
 
 @Slf4j
 @Component
@@ -79,52 +78,54 @@ public class KinopoiskParser implements CommandLineRunner {
         return seriesLinkList;
     }
 
-    private static void parsePage(List<String> seriesLinkList, TitleServiceImpl titleService) {
-        for (String link : seriesLinkList) {
-            log.info(link);
-            TitleModel tempTitleModel = new TitleModel();
+    private static void parsePage(TitleServiceImpl titleService) {
+        File fileDir = new File("/Users/nikol/Desktop/Kinopoisk");
+        for (File file : Objects.requireNonNull(fileDir.listFiles())) {
+            if (!file.isHidden() && !file.getName().split("\\.")[1].equals("txt")) {
+                log.info(file.getName());
+                TitleModel tempTitleModel = new TitleModel();
 
-            try {
-                Document titleHTML = Jsoup.connect(String.format(titleSourceUrl, link)).get();
-                String titleTV = Objects.requireNonNull(
-                        titleHTML.selectFirst("span[data-tid=2da92aed]")).text();
+                try {
+                    Document titleHTML = Jsoup.parse(file);
+                    String titleTV = Objects.requireNonNull(
+                            titleHTML.selectFirst("span[data-tid=2da92aed]")).text();
 
-                tempTitleModel.setTitleName(titleTV);
+                    tempTitleModel.setTitleName(titleTV);
 
-                Element divBody = Objects.requireNonNull(
-                        titleHTML.selectFirst("div[data-test-id=encyclopedic-table]"));
+                    Element divBody = Objects.requireNonNull(
+                            titleHTML.selectFirst("div[data-test-id=encyclopedic-table]"));
 
-                for (String field : requiredFields) {
-                    Elements divField = divBody.select(String.format(":containsOwn(%s)", field));
-                    Elements fieldsInfo = divField.next();
+                    for (String field : requiredFields) {
+                        Elements divField = divBody.select(String.format(":containsOwn(%s)", field));
+                        Elements fieldsInfo = divField.next();
 
-                    if (divField.size() == 0) tempTitleModel.setFields(field, null);
-                    fieldsInfo.forEach(item -> {
-                        if (field.equals("Год производства")) {
-                            String[] itemArray = item.text().split(" ");
+                        if (divField.size() == 0) tempTitleModel.setFields(field, null);
+                        fieldsInfo.forEach(item -> {
+                            if (field.equals("Год производства")) {
+                                String[] itemArray = item.text().split(" ");
 
-                            int titleYear = Integer.parseInt(itemArray[0]);
-                            int titleSeason = Integer.parseInt(itemArray[1].split(" ")[0]
-                                    .replace("(", ""));
+                                int titleYear = Integer.parseInt(itemArray[0]);
+                                int titleSeason = Integer.parseInt(itemArray[1].split(" ")[0]
+                                        .replace("(", ""));
 
-                            tempTitleModel.setTitleYear(titleYear);
-                            tempTitleModel.setTitleSeasonNumber(titleSeason);
+                                tempTitleModel.setTitleYear(titleYear);
+                                tempTitleModel.setTitleSeasonNumber(titleSeason);
 
-                        } else if (field.equals("Время")) {
-                            int titleDuration = Integer.parseInt(item.text().split(" ")[0]
-                                    .replace("—", "0"));
+                            } else if (field.equals("Время")) {
+                                int titleDuration = Integer.parseInt(item.text().split(" ")[0]
+                                        .replace("—", "0"));
 
-                            tempTitleModel.setTitleEpisodeDuration(titleDuration);
+                                tempTitleModel.setTitleEpisodeDuration(titleDuration);
 
-                        } else tempTitleModel.setFields(field, item.text());
-                    });
+                            } else tempTitleModel.setFields(field, item.text());
+                        });
+                    }
+
+                    titleService.save(tempTitleModel);
+
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
                 }
-
-                titleService.save(tempTitleModel);
-                Thread.sleep(15000);
-
-            } catch (IOException | InterruptedException e) {
-                throw new RuntimeException(e);
             }
         }
     }
@@ -132,6 +133,6 @@ public class KinopoiskParser implements CommandLineRunner {
     @Override
     public void run(String[] args) throws Exception {
         log.info("Run: " + getClass());
-        log.info("ULR List Done...Start parsing title pages");
+//       parsePage(titleService);
     }
 }
