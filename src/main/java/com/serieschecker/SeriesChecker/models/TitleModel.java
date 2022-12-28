@@ -34,6 +34,8 @@ public class TitleModel {
 
     private String titlePlatform;
 
+    private String titleIconSrc;
+
     @JsonView(TitleView.FullData.class)
     private String titleGenre;
 

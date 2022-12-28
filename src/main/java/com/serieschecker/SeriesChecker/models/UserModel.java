@@ -42,6 +42,11 @@ public class UserModel implements UserDetails {
     @JsonView(UserView.FullData.class)
     private Set<Role> roleSet;
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "user_title", joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "title_id"))
+    private Set<TitleModel> likedTitle;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() { return getRoleSet(); }
 

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.serieschecker.SeriesChecker.models.TitleModel;
 import com.serieschecker.SeriesChecker.service.impl.TitleServiceImpl;
 import com.serieschecker.SeriesChecker.view.TitleView;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,14 +37,13 @@ public class TitleApi {
         return titleModel;
     }
 
-    // Пока не реализовано. Необходимо оперделить параметры, которые можно будет изменять
     @PutMapping("{id}")
     public TitleModel updateTitleModel(@PathVariable(value = "id") TitleModel titleFromDB,
                                        @RequestBody TitleModel titleModel) {
         if (titleFromDB == null) return null;
 
-        BeanUtils.copyProperties(titleFromDB, titleModel);
-        titleService.save(titleModel);
+        titleFromDB.setTitleSeasonNumber(titleModel.getTitleSeasonNumber());
+        titleService.save(titleFromDB);
 
         return titleFromDB;
     }

@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
     <head>
-        <title th:text="${title}"/>
+        <title>Сериалы</title>
 
         <link rel="icon" type="image/vnd.microsoft.icon" href="/static/icon/favicon.ico"/>
         <link rel="apple-touch-icon" href="/static/icon/apple-touch-icon.png"/>
@@ -22,57 +22,57 @@
                 <ul>
                     <li class="list">
                         <a th:href="@{/}">
-                            <span class="icon">
-                                <ion-icon name="home-outline"></ion-icon>
-                            </span>
+                                <span class="icon">
+                                    <ion-icon name="home-outline"></ion-icon>
+                                </span>
                             <span class="text">Главная</span>
                         </a>
                     </li>
-                    <li class="list active">
+                    <li class="list">
                         <a th:href="@{/post}">
-                            <span class="icon">
-                                <ion-icon name="book-outline"></ion-icon>
-                            </span>
+                                <span class="icon">
+                                    <ion-icon name="book-outline"></ion-icon>
+                                </span>
                             <span class="text">Блог</span>
                         </a>
                     </li>
-                    <li class="list">
+                    <li class="list active">
                         <a th:href="@{/title}">
-                            <span class="icon">
-                                <ion-icon name="videocam-outline"></ion-icon>
-                            </span>
+                                <span class="icon">
+                                    <ion-icon name="videocam-outline"></ion-icon>
+                                </span>
                             <span class="text">Сериалы</span>
                         </a>
                     </li>
                     <li sec:authorize="isAuthenticated()" class="list">
                         <a th:href="@{/user}">
-                        <span class="icon">
-                            <ion-icon name="person-circle-outline"></ion-icon>
-                        </span>
+                            <span class="icon">
+                                <ion-icon name="person-circle-outline"></ion-icon>
+                            </span>
                             <span class="text" sec:authentication="name"/>
                         </a>
                     </li>
                     <li sec:authorize="!isAuthenticated()" class="list">
                         <a href="#" data-bs-toggle="modal" data-bs-target="#signModal">
-                        <span class="icon">
-                            <ion-icon name="person-circle-outline"></ion-icon>
-                        </span>
+                            <span class="icon">
+                                <ion-icon name="person-circle-outline"></ion-icon>
+                            </span>
                             <span class="text">Вход</span>
                         </a>
                     </li>
                     <li sec:authorize="isAuthenticated()" class="list">
                         <a th:href="@{/user/settings}">
-                            <span class="icon">
-                                <ion-icon name="settings-outline"></ion-icon>
-                            </span>
+                                <span class="icon">
+                                    <ion-icon name="settings-outline"></ion-icon>
+                                </span>
                             <span class="text">Настройки</span>
                         </a>
                     </li>
                     <li sec:authorize="!isAuthenticated()" class="list">
                         <a th:href="@{/registration}">
-                        <span class="icon">
-                            <ion-icon name="person-circle-outline"></ion-icon>
-                        </span>
+                            <span class="icon">
+                                <ion-icon name="person-circle-outline"></ion-icon>
+                            </span>
                             <span class="text">Регистрация</span>
                         </a>
                     </li>
@@ -109,16 +109,23 @@
         </div>
     </header>
     <div class="container mt-5">
-        <a href="/post">Назад</a>
-        <div th:each="item : ${post}">
-            <h1 th:text="${item.getPostTitle}"/>
-            <div th:utext="${item.getPostText}"/>
-            <p th:text="'Просмотры: ' + ${item.getPostViews}"/>
-            <p th:text="${item.getAuthorName}"/>
-
-            <div th:if="${item.getAuthorName == #httpServletRequest.remoteUser}">
-                <a th:href="'/user/posts/' + ${item.id} + '/edit'" class="btn btn-primary">Редактировать</a>
-                <a th:href="'/user/posts/' + ${item.id} + '/delete'" class="btn btn-primary">Удалить</a>
+        <h1>Сериалы по запросу</h1>
+        <div class="album py-5 bg-light">
+            <div class="container">
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+                    <div th:each="item : ${title_list}">
+                        <div class="col">
+                            <div class="card">
+                                <img th:src="${item.getTitleIconSrc}" class="card-img-top" th:alt="${item.getTitleName}">
+                                <div class="card-body">
+                                    <h5 class="card-title" th:text="${item.getTitleName}"/>
+                                    <p class="card-text">Здесь будет синопсис сериала, который еще не добавлен)</p>
+                                    <a th:href="'/title/' + ${item.getTitleId}" class="btn btn-primary" style="background-color: #76af7a; color: #ffffff">Подробнее</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

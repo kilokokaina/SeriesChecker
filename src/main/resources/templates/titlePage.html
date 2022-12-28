@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+    <html xmlns:th="http://www.thymeleaf.org"
+          xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+    <head>
+        <title th:text="${title_model.getTitleName}"/>
+
+        <link rel="icon" type="image/vnd.microsoft.icon" href="/static/icon/favicon.ico"/>
+        <link rel="apple-touch-icon" href="/static/icon/apple-touch-icon.png"/>
+
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="apple-mobile-web-app-status-bar" content="#add4ff">
+        <meta name="theme-color" content="#add4ff">
+
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="/static/style/navbar.css">
+
+        <style>
+            p.title_info {
+                color: #4a5562;
+                display: inline;
+            }
+        </style>
+    </head>
+    <body>
+    <header>
+        <nav>
+            <div class="navigation">
+                <ul>
+                    <li class="list">
+                        <a th:href="@{/}">
+                                <span class="icon">
+                                    <ion-icon name="home-outline"></ion-icon>
+                                </span>
+                            <span class="text">Главная</span>
+                        </a>
+                    </li>
+                    <li class="list">
+                        <a th:href="@{/post}">
+                                <span class="icon">
+                                    <ion-icon name="book-outline"></ion-icon>
+                                </span>
+                            <span class="text">Блог</span>
+                        </a>
+                    </li>
+                    <li class="list active">
+                        <a th:href="@{/title}">
+                                <span class="icon">
+                                    <ion-icon name="videocam-outline"></ion-icon>
+                                </span>
+                            <span class="text">Сериалы</span>
+                        </a>
+                    </li>
+                    <li sec:authorize="isAuthenticated()" class="list">
+                        <a th:href="@{/user}">
+                            <span class="icon">
+                                <ion-icon name="person-circle-outline"></ion-icon>
+                            </span>
+                            <span class="text" id="userName" sec:authentication="name"/>
+                        </a>
+                    </li>
+                    <li sec:authorize="!isAuthenticated()" class="list">
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#signModal">
+                            <span class="icon">
+                                <ion-icon name="person-circle-outline"></ion-icon>
+                            </span>
+                            <span class="text">Вход</span>
+                        </a>
+                    </li>
+                    <li sec:authorize="isAuthenticated()" class="list">
+                        <a th:href="@{/user/settings}">
+                                <span class="icon">
+                                    <ion-icon name="settings-outline"></ion-icon>
+                                </span>
+                            <span class="text">Настройки</span>
+                        </a>
+                    </li>
+                    <li sec:authorize="!isAuthenticated()" class="list">
+                        <a th:href="@{/registration}">
+                            <span class="icon">
+                                <ion-icon name="person-circle-outline"></ion-icon>
+                            </span>
+                            <span class="text">Регистрация</span>
+                        </a>
+                    </li>
+                    <div class="toggle">
+                        <ion-icon name="menu-outline" class="open"></ion-icon>
+                        <ion-icon name="close-outline" class="close"></ion-icon>
+                    </div>
+                    <div class="indicator"></div>
+                </ul>
+            </div>
+        </nav>
+
+        <div id="signModal" class="modal fade">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalLabel">Вход</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <input type="text" class="form-control mb-1" name="username" id="username-id" placeholder="Username:">
+                            <input type="password" class="form-control" name="password" id="password-id" placeholder="Password:">
+                            <input class="form-check-input" type="checkbox" value="" id="remember-id">
+                            <label class="form-check-label" for="remember-id">Запомнить меня</label>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                        <button type="button" class="btn btn-outline-primary" onclick="sendLoginData()">Войти</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <main>
+        <div class="container mt-5">
+            <h1 id="titleName" th:text="${title_model.getTitleName}"/>
+            <div class="container text-center">
+                <div class="row">
+                    <div class="col">
+                        <img th:src="${title_model.getTitleIconSrc}" width="240" height="320">
+                    </div>
+                    <div class="col">
+                        <span style="display: block">
+                            <p class="title_info">Год:</p>
+                            <p class="text_info" style="display: inline" th:text="${title_model.getTitleYear}"/>
+                        </span>
+                        <span style="display: block">
+                            <p class="title_info">Страна:</p>
+                            <p class="text_info" style="display: inline" th:text="${title_model.getTitleCountry}"/>
+                        </span>
+                        <span style="display: block">
+                            <p class="title_info">Жанры:</p>
+                            <p class="text_info" style="display: inline" th:text="${title_model.getTitleGenre}"/>
+                        </span>
+                        <span style="display: block">
+                            <p class="title_info">Платформа:</p>
+                            <p class="text_info" style="display: inline" th:text="${title_model.getTitlePlatform}"/>
+                        </span>
+                        <span style="display: block">
+                            <p class="title_info">Кол-во сезонов:</p>
+                            <p class="text_info" style="display: inline" th:text="${title_model.getTitleSeasonNumber}"/>
+                        </span>
+                        <span style="display: block">
+                            <p class="title_info">PG:</p>
+                            <p class="text_info" style="display: inline" th:text="${title_model.getTitlePG}"/>
+                        </span>
+                        <span style="display: block">
+                            <p class="title_info">Продолжительность серии:</p>
+                            <p class="text_info" style="display: inline-block" th:text="${title_model.getTitleEpisodeDuration}"/>
+                        </span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <span>
+                            <img src="/static/icon/favor_icon.png" width="15" height="15" id="favorIcon">
+                            <button type="button" onclick="setToFavorite()" class="btn btn-primary">
+                                Добавить в избранное
+                            </button>
+                        </span>
+                    </div>
+                </div>
+                <div id="carouselExampleCaptions" class="carousel slide" data-bs-ride="false" sec:authorize="isAuthenticated()">
+                    <div class="carousel-indicators">
+                        <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                        <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                        <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="2" aria-label="Slide 3"></button>
+                    </div>
+                    <div class="carousel-inner">
+                        <div th:each="item : ${rec_title}" class="carousel-item">
+                            <img th:src="${item.getTitleIconSrc}" class="d-block w-100" th:alt="${item.getTitleName}">
+                            <div class="carousel-caption d-none d-md-block">
+                                <h5 th:text="${item.getTitleName}"/>
+                                <p>Здесь будет синопсис сериала, который еще не добавлен)</p>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+    <footer th:insert="partials/footer :: footer"></footer>
+    <script>
+        function setToFavorite() {
+            let userElement = document.getElementById('userName');
+
+            if (userElement == null) {
+                alert('Для того, чтобы добавить сериал в избранное выполните вход');
+            } else {
+                let titleName = document.getElementById("titleName").innerText;
+                fetch('/title/set_to_favorite', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json; charset=utf-8'
+                    },
+                    body: titleName
+                }).then(async response => {
+                    let responseCode = Number.parseInt(await response.text());
+
+                    if (responseCode === 1) alert(`Вы добавили ${titleName} в избранное!`);
+                    else alert('Хммм...Возникла какая-то ошибка');
+                })
+            }
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+    </body>
+</html>

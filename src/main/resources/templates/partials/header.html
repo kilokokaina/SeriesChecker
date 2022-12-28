@@ -1,50 +1,73 @@
 <div th:fragment="header">
     <div class="fixed-top mb-5">
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="/">SeriesChecker</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                        <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" href="/post">Статьи</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/about">О нас</a>
-                        </li>
-                        <li sec:authorize="isAuthenticated()" class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                               data-bs-toggle="dropdown" aria-expanded="false" sec:authentication="name"/>
-                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <li><a class="dropdown-item" href="/user">Личный кабинет</a></li>
-                                <li><a class="dropdown-item" href="/user/addpost">Добавить пост</a></li>
-                                <li><a class="dropdown-item" href="/user/settings">Настройки</a></li>
-                                <li sec:authorize="hasAuthority('ADMIN')">
-                                    <a class="dropdown-item" href="/admin">Админ-панель</a>
-                                </li>
-                                <li><hr class="dropdown-divider"></li>
-                                    <li><a class="dropdown-item" onclick="signOut()">Выход</a></li>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
-                    <form class="d-flex me-2" th:action="@{/search}" method="get">
-                        <input class="form-control me-2" type="search" placeholder="Поиск..."
-                               aria-label="Search" name="search">
-                        <button class="btn btn-outline-success" type="submit">Поиск</button>
-                    </form>
-                    <div sec:authorize="!isAuthenticated()">
-                        <button type="button" class="btn btn-outline-primary me-2"
-                                data-bs-toggle="modal" data-bs-target="#signModal">Вход</button>
-                        <a href="/registration" class="btn btn-outline-primary">Регистрация</a>
+        <nav>
+            <div class="navigation">
+                <ul>
+                    <li class="list active">
+                        <a th:href="@{/}">
+                                <span class="icon">
+                                    <ion-icon name="home-outline"></ion-icon>
+                                </span>
+                            <span class="text">Главная</span>
+                        </a>
+                    </li>
+                    <li class="list" id="post">
+                        <a th:href="@{/post}">
+                                <span class="icon">
+                                    <ion-icon name="book-outline"></ion-icon>
+                                </span>
+                            <span class="text">Блог</span>
+                        </a>
+                    </li>
+                    <li class="list" id="title">
+                        <a th:href="@{/title}">
+                                <span class="icon">
+                                    <ion-icon name="videocam-outline"></ion-icon>
+                                </span>
+                            <span class="text">Сериалы</span>
+                        </a>
+                    </li>
+                    <li sec:authorize="isAuthenticated()" class="list" id="user">
+                        <a th:href="@{/user}">
+                            <span class="icon">
+                                <ion-icon name="person-circle-outline"></ion-icon>
+                            </span>
+                            <span class="text" sec:authentication="name"/>
+                        </a>
+                    </li>
+                    <li sec:authorize="!isAuthenticated()" class="list">
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#signModal">
+                            <span class="icon">
+                                <ion-icon name="person-circle-outline"></ion-icon>
+                            </span>
+                            <span class="text">Вход</span>
+                        </a>
+                    </li>
+                    <li sec:authorize="isAuthenticated()" class="list" id="settings">
+                        <a th:href="@{/user/settings}">
+                                <span class="icon">
+                                    <ion-icon name="settings-outline"></ion-icon>
+                                </span>
+                            <span class="text">Настройки</span>
+                        </a>
+                    </li>
+                    <li sec:authorize="!isAuthenticated()" class="list">
+                        <a th:href="@{/registration}">
+                            <span class="icon">
+                                <ion-icon name="person-circle-outline"></ion-icon>
+                            </span>
+                            <span class="text">Регистрация</span>
+                        </a>
+                    </li>
+                    <div class="toggle">
+                        <ion-icon name="menu-outline" class="open"></ion-icon>
+                        <ion-icon name="close-outline" class="close"></ion-icon>
                     </div>
-                </div>
+                    <div class="indicator"></div>
+                </ul>
             </div>
         </nav>
+
     </div>
 
     <div id="signModal" class="modal fade">

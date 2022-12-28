@@ -1,6 +1,7 @@
 package com.serieschecker.SeriesChecker.service.impl;
 
 import com.serieschecker.SeriesChecker.bot.AuthTelegramBot;
+import com.serieschecker.SeriesChecker.dto.CredentialsDTO;
 import com.serieschecker.SeriesChecker.models.Status2FAModel;
 import com.serieschecker.SeriesChecker.models.UserModel;
 import lombok.extern.slf4j.Slf4j;
@@ -9,6 +10,7 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -26,10 +28,8 @@ public class AuthenticationProviderImpl implements AuthenticationProvider {
     private final StatusServiceImpl statusService;
 
     @Autowired
-    public AuthenticationProviderImpl(UserServiceImpl userService,
-                                     AuthTelegramBot authTelegramBot,
-                                     HttpServletRequest httpRequest,
-                                     StatusServiceImpl statusService) {
+    public AuthenticationProviderImpl(UserServiceImpl userService, AuthTelegramBot authTelegramBot,
+                                     HttpServletRequest httpRequest, StatusServiceImpl statusService) {
         this.authTelegramBot = authTelegramBot;
         this.statusService = statusService;
         this.userService = userService;
@@ -115,6 +115,21 @@ public class AuthenticationProviderImpl implements AuthenticationProvider {
                 enteredPassword,
                 userDetails.getAuthorities()
         );
+    }
+
+    public String startSession(CredentialsDTO credentialsDTO) {
+        String username = credentialsDTO.getUsername();
+        String password = credentialsDTO.getPassword();
+
+        Authentication authentication = new UsernamePasswordAuthenticationToken(username, password);
+        authentication = authenticate((authentication));
+
+        if (authentication == null) return "false";
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        log.info("Authentication success: " + username);
+
+        return "true";
     }
 
     @Override

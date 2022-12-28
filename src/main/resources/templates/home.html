@@ -2,22 +2,116 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
     <head>
-        <title th:text="${title}"/>
         <link rel="icon" type="image/vnd.microsoft.icon" href="/static/icon/favicon.ico"/>
         <link rel="apple-touch-icon" href="/static/icon/apple-touch-icon.png"/>
+
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="/static/style/navbar.css">
+
+        <link rel="manifest" href="/static/manifest.webmanifest">
 
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
-        <link rel="manifest" href="/static/manifest.webmanifest">
+        <meta name="apple-mobile-web-app-status-bar" content="#add4ff">
+        <meta name="theme-color" content="#add4ff">
 
-        <meta name="apple-mobile-web-app-status-bar" content="#98FB98">
-        <meta name="theme-color" content="#98FB98">
-
+        <title th:text="${title}"/>
     </head>
     <body>
-        <header th:insert="partials/header :: header"></header>
+        <header>
+            <nav>
+                <div class="navigation">
+                    <ul>
+                        <li class="list active">
+                            <a th:href="@{/}">
+                            <span class="icon">
+                                <ion-icon name="home-outline"></ion-icon>
+                            </span>
+                                <span class="text">Главная</span>
+                            </a>
+                        </li>
+                        <li class="list">
+                            <a th:href="@{/post}">
+                            <span class="icon">
+                                <ion-icon name="book-outline"></ion-icon>
+                            </span>
+                                <span class="text">Блог</span>
+                            </a>
+                        </li>
+                        <li class="list">
+                            <a th:href="@{/title}">
+                            <span class="icon">
+                                <ion-icon name="videocam-outline"></ion-icon>
+                            </span>
+                                <span class="text">Сериалы</span>
+                            </a>
+                        </li>
+                        <li sec:authorize="isAuthenticated()" class="list">
+                            <a th:href="@{/user}">
+                        <span class="icon">
+                            <ion-icon name="person-circle-outline"></ion-icon>
+                        </span>
+                                <span class="text" sec:authentication="name"/>
+                            </a>
+                        </li>
+                        <li sec:authorize="!isAuthenticated()" class="list">
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#signModal">
+                        <span class="icon">
+                            <ion-icon name="person-circle-outline"></ion-icon>
+                        </span>
+                                <span class="text">Вход</span>
+                            </a>
+                        </li>
+                        <li sec:authorize="isAuthenticated()" class="list">
+                            <a th:href="@{/user/settings}">
+                            <span class="icon">
+                                <ion-icon name="settings-outline"></ion-icon>
+                            </span>
+                                <span class="text">Настройки</span>
+                            </a>
+                        </li>
+                        <li sec:authorize="!isAuthenticated()" class="list">
+                            <a th:href="@{/registration}">
+                        <span class="icon">
+                            <ion-icon name="person-circle-outline"></ion-icon>
+                        </span>
+                                <span class="text">Регистрация</span>
+                            </a>
+                        </li>
+                        <div class="toggle">
+                            <ion-icon name="menu-outline" class="open"></ion-icon>
+                            <ion-icon name="close-outline" class="close"></ion-icon>
+                        </div>
+                        <div class="indicator"></div>
+                    </ul>
+                </div>
+            </nav>
+
+            <div id="signModal" class="modal fade">
+                <div class="modal-dialog modal-sm">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modalLabel">Вход</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <input type="text" class="form-control mb-1" name="username" id="username-id" placeholder="Username:">
+                                <input type="password" class="form-control" name="password" id="password-id" placeholder="Password:">
+                                <input class="form-check-input" type="checkbox" value="" id="remember-id">
+                                <label class="form-check-label" for="remember-id">Запомнить меня</label>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                            <button type="button" class="btn btn-outline-primary" onclick="sendLoginData()">Войти</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </header>
         <main>
             <section class="py-5 text-center container">
                 <div class="row py-lg-5">
@@ -25,12 +119,123 @@
                         <h1 class="fw-light">SeriesChecker</h1>
                         <p class="lead text-muted">SeriesChecker - это сервис от любителей сериалов для любителей серилов. Здесь представлены статьи с кратким пересказом сериалов.</p>
                         <p>
-                            <a href="/post" class="btn btn-primary my-2">Найти сериал</a>
+                            <a data-bs-toggle="modal" data-bs-target="#seriesModal" class="btn btn-primary my-2">Найти сериал</a>
                             <a href="/user/addpost" class="btn btn-secondary my-2">Сделать запись</a>
                         </p>
                     </div>
                 </div>
             </section>
+
+            <div id="seriesModal" class="modal fade">
+                <div class="modal-dialog modal-sm">
+                    <div class="modal-content">
+                        <form th:action="@{/title/choose_title}" method="post">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="exampleModalLabel">Подбор сериалов</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                Выбирете нужные жанры и продолжительность, а наш сервис подберет вам сериалы
+                                <div class="chooseGenre mb-2">
+                                    <h5>Жанры</h5>
+                                    <input class="form-check-input" name="titleGenre" type="checkbox" value="драма" id="flexCheckDrama">
+                                    <label class="form-check-label" for="flexCheckDrama">
+                                        драма
+                                    </label>
+                                    <input class="form-check-input" name="titleGenre" type="checkbox" value="мелодрама" id="flexCheckSoup">
+                                    <label class="form-check-label" for="flexCheckSoup">
+                                        мелодрама
+                                    </label>
+                                    <input class="form-check-input" name="titleGenre" type="checkbox" value="комедия" id="flexCheckComedy">
+                                    <label class="form-check-label" for="flexCheckComedy">
+                                        комедия
+                                    </label>
+                                    <input class="form-check-input" name="titleGenre" type="checkbox" value="приключения" id="flexCheckAdventure">
+                                    <label class="form-check-label" for="flexCheckAdventure">
+                                        приключения
+                                    </label>
+                                    <input class="form-check-input" name="titleGenre" type="checkbox" value="боевик" id="flexCheckAction">
+                                    <label class="form-check-label" for="flexCheckAction">
+                                        боевик
+                                    </label>
+                                    <input class="form-check-input" name="titleGenre" type="checkbox" value="ужасы" id="flexCheckHorror">
+                                    <label class="form-check-label" for="flexCheckHorror">
+                                        ужасы
+                                    </label>
+                                    <input class="form-check-input" name="titleGenre" type="checkbox" value="мультфильм" id="flexCheckCartoon">
+                                    <label class="form-check-label" for="flexCheckCartoon">
+                                        мультфильм
+                                    </label>
+                                    <input class="form-check-input" name="titleGenre" type="checkbox" value="аниме" id="flexCheckAnime">
+                                    <label class="form-check-label" for="flexCheckAnime">
+                                        аниме
+                                    </label>
+                                    <input class="form-check-input" name="titleGenre" type="checkbox" value="триллер" id="flexCheckThriller">
+                                    <label class="form-check-label" for="flexCheckThriller">
+                                        триллер
+                                    </label>
+                                    <input class="form-check-input" name="titleGenre" type="checkbox" value="криминал" id="flexCheckCriminal">
+                                    <label class="form-check-label" for="flexCheckCriminal">
+                                        криминал
+                                    </label>
+                                    <input class="form-check-input" name="titleGenre" type="checkbox" value="фантастика" id="flexCheckFiction">
+                                    <label class="form-check-label" for="flexCheckFiction">
+                                        фантастика
+                                    </label>
+                                    <input class="form-check-input" name="titleGenre" type="checkbox" value="детектив" id="flexCheckDetective">
+                                    <label class="form-check-label" for="flexCheckDetective">
+                                        детектив
+                                    </label>
+                                    <input class="form-check-input" name="titleGenre" type="checkbox" value="фэнтези" id="flexCheckFantasy">
+                                    <label class="form-check-label" for="flexCheckFantasy">
+                                        фэнтези
+                                    </label>
+                                    <input class="form-check-input" name="titleGenre" type="checkbox" value="семейный" id="flexCheckFamily">
+                                    <label class="form-check-label" for="flexCheckFamily">
+                                        семейный
+                                    </label>
+                                </div>
+                                <div class="chooseDuration  mb-2">
+                                    <h5>Продолжительность эпизода</h5>
+                                    <label for="titleDuration">
+                                        Время эпизода
+                                    </label>
+                                    <input id="titleDuration" name="titleDuration" type="range" min="8" max="90" step="1" oninput="inputDuration()">
+                                    <label for="titleDuration" id="durationInput">мин.</label>
+                                </div>
+                                <div class="choosePG mb-2">
+                                    <h5>Возрастной рейтинг</h5>
+                                    <input class="form-check-input" type="radio" name="titlePG" value="18+" id="flexRadioDefault18">
+                                    <label class="form-check-label" for="flexRadioDefault18">
+                                        18+
+                                    </label>
+                                    <input class="form-check-input" type="radio" name="titlePG" value="16+" id="flexRadioDefault16">
+                                    <label class="form-check-label" for="flexRadioDefault16">
+                                        16+
+                                    </label>
+                                    <input class="form-check-input" type="radio" name="titlePG" value="12+" id="flexRadioDefault12">
+                                    <label class="form-check-label" for="flexRadioDefault12">
+                                        12+
+                                    </label>
+                                    <input class="form-check-input" type="radio" name="titlePG" value="6+" id="flexRadioDefault6">
+                                    <label class="form-check-label" for="flexRadioDefault6">
+                                        6+
+                                    </label>
+                                    <input class="form-check-input" type="radio" name="titlePG" value="0+" id="flexRadioDefault0">
+                                    <label class="form-check-label" for="flexRadioDefault0">
+                                        0+
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                                <button type="submit" class="btn btn-primary" >Подобрать</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
             <div class="album py-5 bg-light">
                 <div class="container">
                     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">

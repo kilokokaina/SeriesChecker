@@ -42,8 +42,7 @@ public class AdminController {
     @PostMapping("user/{id}/edit")
     public String userEditPost(@PathVariable(value = "id") UserModel userModel,
                                @RequestParam String username,
-                               @RequestParam Map<String, String> form,
-                               Model model) {
+                               @RequestParam Map<String, String> form) {
         userModel.setUsername(username);
         Set<String> roles = Arrays.stream(Role.values())
                 .map(Role::name)

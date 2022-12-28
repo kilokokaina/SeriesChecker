@@ -11,6 +11,5 @@
   ],
   "name": "SeriesChecker",
   "short_name": "SeriesChecker",
-  "start_url": "/",
-  "theme_color": "PaleGreen"
+  "start_url": "/"
 }

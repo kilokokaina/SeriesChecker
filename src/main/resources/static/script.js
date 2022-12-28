@@ -27,9 +27,8 @@ async function sendLoginData() {
     }
 }
 
-function signOut() {
-    fetch('/logout', {method: 'GET'}).then(() => {
-        alert('User has logged out');
-        location.reload();
-    });
+function inputDuration() {
+    let slider = document.getElementById("titleDuration").value;
+    let sliderLabel = document.getElementById("durationInput");
+    sliderLabel.innerText = slider + " мин.";
 }

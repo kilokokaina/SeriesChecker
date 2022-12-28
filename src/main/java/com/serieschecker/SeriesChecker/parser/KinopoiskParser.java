@@ -12,7 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -132,7 +135,18 @@ public class KinopoiskParser implements CommandLineRunner {
 
     @Override
     public void run(String[] args) throws Exception {
-        log.info("Run: " + getClass());
-//       parsePage(titleService);
+//        File file = new File("/Users/nikol/Desktop/Kinopoisk");
+//
+//        for (File htmlPage : Objects.requireNonNull(file.listFiles())) {
+//            if (!htmlPage.isHidden() && !htmlPage.getName().split("\\.")[1].equals("txt")) {
+//                Document titleDocument = Jsoup.parse(htmlPage);
+//
+//                String titleName = Objects.requireNonNull(
+//                        titleDocument.selectFirst("span[data-tid=2da92aed]")).text();
+//                String titleIconSrc = titleDocument.getElementsByAttributeValueContaining("class", "film-poster").attr("src");
+//
+//                log.info(titleName + " http:" + titleIconSrc);
+//            }
+//        }
     }
 }

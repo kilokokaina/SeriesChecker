@@ -1,5 +1,6 @@
 package com.serieschecker.SeriesChecker.controllers;
 
+import com.serieschecker.SeriesChecker.dto.CredentialsDTO;
 import com.serieschecker.SeriesChecker.models.PostModel;
 import com.serieschecker.SeriesChecker.models.UserModel;
 import com.serieschecker.SeriesChecker.service.impl.AuthenticationProviderImpl;
@@ -7,9 +8,6 @@ import com.serieschecker.SeriesChecker.service.impl.PostServiceImpl;
 import com.serieschecker.SeriesChecker.service.impl.UserServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -55,8 +53,8 @@ public class MainController {
 
         ArrayList<PostModel> postList = postService.findAllSorted();
 
-        model.addAttribute("posts", postList);
         model.addAttribute("title", "Статьи");
+        model.addAttribute("posts", postList);
 
         return "post";
     }
@@ -64,11 +62,7 @@ public class MainController {
     @GetMapping("search")
     public RedirectView searchFunction(@RequestParam String search,
                                        RedirectAttributes redirectAttributes) {
-        log.info("Search parameter (/search): " + search);
-        log.info("Result string: " + String.format("redirect:/post?search=%s", search));
-
         redirectAttributes.addAttribute("search", search);
-
         return new RedirectView("post");
     }
 
@@ -93,24 +87,8 @@ public class MainController {
         return "redirect:/login";
     }
 
-    public static class CredentialsDTO {
-        public String username;
-        public String password;
-    }
-
     @PostMapping("auth")
     public @ResponseBody String popupLoginProcess(@RequestBody CredentialsDTO credentialsDTO) {
-        String username = credentialsDTO.username;
-        String password = credentialsDTO.password;
-
-        Authentication authentication = new UsernamePasswordAuthenticationToken(username, password);
-        authentication = authenticationProvider.authenticate((authentication));
-
-        if (authentication == null) return "false";
-
-        log.info("Authentication success: " + username);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        return "true";
+        return authenticationProvider.startSession(credentialsDTO);
     }
 }

@@ -1,12 +1,24 @@
 <div th:fragment="footer">
-    <footer class="text-muted py-5">
-        <div class="container">
-            <p class="float-end mb-1">
-                <a href="#">Back to top</a>
-            </p>
-            <p class="mb-1">Album example is © Bootstrap, but please download and customize it for yourself!</p>
-            <p class="mb-0">New to Bootstrap? <a href="/">Visit the homepage</a> or read our <a href="/docs/5.1/getting-started/introduction/">getting started guide</a>.</p>
-        </div>
-    </footer>
+    <script>
+        let menuToggle = document.querySelector('.toggle');
+        let navigator = document.querySelector('.navigation');
+
+
+        menuToggle.onclick = function () {
+            menuToggle.classList.toggle('active');
+            navigator.classList.toggle('active');
+        }
+
+        const list = document.querySelectorAll('.list');
+
+        function activeLink() {
+            list.forEach(item => item.classList.remove('active'));
+            this.classList.add('active');
+        }
+
+        list.forEach(item => item.addEventListener('click', activeLink));
+    </script>
     <script src="/static/script.js"></script>
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
 </div>
