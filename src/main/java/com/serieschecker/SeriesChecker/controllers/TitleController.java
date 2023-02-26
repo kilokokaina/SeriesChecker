@@ -17,9 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.*;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
 
 @Slf4j
 @Controller
@@ -69,50 +67,8 @@ public class TitleController {
     public String titlePage(@PathVariable(value = "id")TitleModel titleModel, Model model,
                             Authentication authentication) {
         if (authentication != null) {
-            UserModel userModel = userService.findByUsername(authentication.getName());
-
-            Set<TitleModel> favorTitleSet = userModel.getLikedTitle();
-            Set<String> genreSet = new HashSet<>();
-
-            favorTitleSet.forEach(title -> {
-                String[] titleGenre = title.getTitleGenre().split(", ");
-                genreSet.addAll(List.of(titleGenre));
-            });
-
-            int genreCount = 0;
-            HashMap<String, Integer> genreCountMap = new HashMap<>();
-            for (String genre: genreSet) {
-                for (TitleModel title: favorTitleSet) {
-                    if (title.getTitleGenre().contains(genre)) {
-                        genreCount++;
-                    }
-                }
-                genreCountMap.put(genre, genreCount);
-            }
-
-            HashMap<String, Integer> genreCountMapSorted = genreCountMap.entrySet()
-                    .stream().sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
-                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
-                            (e1, e2) -> e1, LinkedHashMap::new));
-
-            String[] favorGenreArray = new String[5];
-            int i = 0;
-            if (genreCountMapSorted.size() >= 5) {
-                for (String genre: genreCountMapSorted.keySet()) {
-                    favorGenreArray[i] = genre;
-                    i++;
-                    if (i == 5) break;
-                }
-            } else {
-                favorGenreArray = new String[genreCountMapSorted.keySet().size()];
-                for (String genre: genreCountMapSorted.keySet()) {
-                    favorGenreArray[i] = genre;
-                    i++;
-                }
-            }
-
             model.addAttribute("rec_title",
-                    titleService.findAllByGenre(Set.of(favorGenreArray)).subList(0, 3));
+                    titleService.findAllByGenre(titleService.getRecList(authentication)).subList(0, 3));
 
             log.info("here");
         }

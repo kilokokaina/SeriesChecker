@@ -92,11 +92,11 @@ public class AuthTelegramBot extends TelegramLongPollingBot {
         List<InlineKeyboardButton> buttonRow2 = new ArrayList<>();
 
         InlineKeyboardButton buttonYes = new InlineKeyboardButton();
-        buttonYes.setText("Yes, it was me");
+        buttonYes.setText("Да, это был я");
         buttonYes.setCallbackData("true");
 
         InlineKeyboardButton buttonNo = new InlineKeyboardButton();
-        buttonNo.setText("No, it wasn't me");
+        buttonNo.setText("Нет, это не я");
         buttonNo.setCallbackData("false");
 
         buttonRow1.add(buttonYes);
@@ -116,8 +116,6 @@ public class AuthTelegramBot extends TelegramLongPollingBot {
                 "Кхм...Вообще я отправляю уведомления, но '%s' - звучит действительно интересно)",
                 "'%s'\n(С) Мао Цзэдун", "Сделаем вид, что это просто очепятка", "Ок"};
 
-        int randomNumber = (int) (Math.random() * 6);
-
-        return phraseArray[randomNumber];
+        return phraseArray[(int) (Math.random() * 6)];
     }
 }
