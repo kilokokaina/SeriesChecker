@@ -66,6 +66,8 @@ public class AuthenticationProviderImpl implements AuthenticationProvider {
                 """, enteredUsername, httpRequest.getRemoteAddr()
             ));
 
+            sendMessage.setProtectContent(true);
+
             authTelegramBot.setMessage(sendMessage);
 
             try {
